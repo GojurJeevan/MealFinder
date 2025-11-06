@@ -2,6 +2,7 @@
   const searchIn = document.getElementById("foodSearch");
   const searchBtn = document.getElementById("searchBtn");
   const meals = document.getElementById("meals");
+  const searchMeals = document.getElementById("searchMeals");
 
   function displayMealsList(mealsData) {
     meals.classList.add("flex", "flex-wrap", "justify-center", "gap-8", "px-10", "py-10");
