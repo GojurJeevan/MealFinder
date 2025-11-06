@@ -37,6 +37,7 @@ function displayFood(products) {
       `;
       foodContainer.appendChild(foodCard);
       foodCard.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
         displayDescription(product.strCategory, product.strCategoryDescription);
         fetchMealsByCategory(product.strCategory);
       });
@@ -100,8 +101,10 @@ async function fetchMealsByCategory(categoryName) {
           </div>
         `;
         mealCard.addEventListener("click", () => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
           fetchMealDetails(meal.idMeal);
         });
+
         similarMealsContainer.appendChild(mealCard);
       }
     });
