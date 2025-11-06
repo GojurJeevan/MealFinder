@@ -79,7 +79,7 @@ function displayDescription(name, description) {
 }
 
 function fetchMealsByCategory(categoryName) {
-  fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${categoryName}`)
+  fetch("https://www.themealdb.com/api/json/v1/1/filter.php?c=" + categoryName)
     .then((response) => response.json())
     .then((data) => {
       const similarMealsContainer = document.getElementById("similarMeals");
@@ -96,10 +96,65 @@ function fetchMealsByCategory(categoryName) {
             <h4 class="text-lg font-semibold text-gray-800">${meal.strMeal}</h4>
           </div>
         `;
+        mealCard.addEventListener("click", () => {
+          fetchMealDetails(meal.idMeal);
+        });
 
         similarMealsContainer.appendChild(mealCard);
       });
     })
     .catch((error) => console.error("Error fetching meals:", error));
 }
+
+
+function fetchMealDetails(mealId) {
+  fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.meals && data.meals[0]) {
+        displayMealDetails(data.meals[0]);
+      }
+    })
+    .catch(error => console.error('Error fetching meal details:', error));
+}
+
+function displayMealDetails(meal) {
+  meals.innerHTML = `
+    <div class="rounded-xl mx-10 my-10 p-6">
+      
+        <div class="w-full md:w-1/3 flex justify-center">
+          <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="rounded-lg w-full max-w-xs object-cover" />
+        </div>
+        <div class="flex-1">
+          <h2 class="text-4xl font-bold text-orange-600 mb-2">${meal.strMeal}</h2>
+          <div class="mb-3">
+            <span class="font-semibold">Category:</span> ${meal.strCategory || ""}
+            <span class="ml-4 font-semibold">Area:</span> ${meal.strArea || ""}
+          </div>
+          <div class="mb-3">
+            <span class="font-semibold">Tags:</span> ${(meal.strTags || "").split(",").join(", ")}
+          </div>
+          <div class="mb-4"><a href="${meal.strSource || '#'}" class="text-blue-600 underline" target="_blank">Source Link</a></div>
+          <h3 class="text-2xl font-bold text-orange-500 mb-2">Ingredients</h3>
+          <ul class="mb-4 grid grid-cols-2 gap-2">${getIngredientsList(meal)}</ul>
+          <h3 class="text-2xl font-bold text-orange-500 mb-2">Instructions</h3>
+          <p class="text-gray-700 whitespace-pre-wrap">${meal.strInstructions}</p>
+        </div>
+      
+    </div>
+  `;
+}
+
+function getIngredientsList(meal) {
+  let ingredients = "";
+  for (let i = 1; i <= 20; i++) {
+    const ing = meal[`strIngredient${i}`];
+    const measure = meal[`strMeasure${i}`];
+    if (ing && ing.trim()) {
+      ingredients += `<li>🍴 ${ing} <span class="text-gray-500">(${measure || ""})</span></li>`;
+    }
+  }
+  return ingredients;
+}
+
 

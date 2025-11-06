@@ -2,7 +2,7 @@
   const searchIn = document.getElementById("foodSearch");
   const searchBtn = document.getElementById("searchBtn");
   const meals = document.getElementById("meals");
-  const searchMeals = document.getElementById("searchMeals");
+
 
   function displayMealsList(mealsData) {
     meals.classList.add("flex", "flex-wrap", "justify-center", "gap-8", "px-10", "py-10");
@@ -13,11 +13,9 @@
       return;
     }
 
-    mealsData.forEach((meal) => {
+  mealsData.forEach((meal) => {
       const mealCard = document.createElement("div");
-      mealCard.className =
-        "bg-white rounded-xl shadow-lg overflow-hidden w-80 text-center hover:shadow-2xl transition-all duration-300 cursor-pointer";
-
+      mealCard.className = "bg-white rounded-xl shadow-lg overflow-hidden w-80 text-center hover:shadow-2xl transition-all duration-300 cursor-pointer";
       mealCard.innerHTML = `
         <div class="relative p-4">
           <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="w-full h-52 object-cover rounded-lg">
@@ -26,10 +24,9 @@
           </div>
         </div>
       `;
-
       meals.appendChild(mealCard);
-    });
-  }
+  });
+}
 
   function searchMealsByName(foodName) {
     fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${foodName}`)
