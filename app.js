@@ -6,41 +6,44 @@ const categoryList = document.getElementById("categoryList");
 const meals = document.getElementById("meals");
 const searchMeals = document.getElementById("searchMeals");
 
-fetch("https://www.themealdb.com/api/json/v1/1/categories.php")
-  .then((response) => response.json())
-  .then((data) => {
+
+async function fetchCategories() {
+  try {
+    const response = await fetch("https://www.themealdb.com/api/json/v1/1/categories.php");
+    const data = await response.json();
     const foodProducts = data.categories;
     displayFood(foodProducts);
     populateSidebar(foodProducts);
-  })
-  .catch((error) => console.error("Error fetching data:", error));
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+}
+fetchCategories();
 
 function displayFood(products) {
   foodContainer.classList.add("flex", "flex-wrap", "justify-center", "gap-8", "px-10", "py-10");
   foodContainer.innerHTML = "";
-
   products.forEach((product) => {
-    const foodCard = document.createElement("div");
-    foodCard.className =
-      "bg-white rounded-xl shadow-lg overflow-hidden w-80 text-center hover:shadow-2xl transition-all duration-300 cursor-pointer";
-
-    foodCard.innerHTML = `
-      <div class="relative p-4">
-        <img src="${product.strCategoryThumb}" alt="${product.strCategory}" class="w-full h-50">
-        <div class="absolute top-2 right-2 w-30 bg-orange-400 text-white rounded-lg px-2">
-          <h3 class="text-lg font-semibold">${product.strCategory}</h3>
+    if (product.strCategoryThumb && product.strCategoryThumb.trim() !== "") {
+      const foodCard = document.createElement("div");
+      foodCard.className = "bg-white rounded-xl shadow-lg overflow-hidden w-80 text-center hover:shadow-2xl transition-all duration-300 cursor-pointer";
+      foodCard.innerHTML = `
+        <div class="relative p-4">
+          <img src="${product.strCategoryThumb}" alt="${product.strCategory}" class="w-full h-50">
+          <div class="absolute top-2 right-2 w-30 bg-orange-400 text-white rounded-lg px-2">
+            <h3 class="text-lg font-semibold">${product.strCategory}</h3>
+          </div>
         </div>
-      </div>
-    `;
-
-    foodContainer.appendChild(foodCard);
-
-    foodCard.addEventListener("click", () => {
-      displayDescription(product.strCategory, product.strCategoryDescription);
-      fetchMealsByCategory(product.strCategory);
-    });
+      `;
+      foodContainer.appendChild(foodCard);
+      foodCard.addEventListener("click", () => {
+        displayDescription(product.strCategory, product.strCategoryDescription);
+        fetchMealsByCategory(product.strCategory);
+      });
+    }
   });
 }
+
 
 function populateSidebar(categories) {
   categoryList.innerHTML = "";
@@ -57,6 +60,7 @@ function populateSidebar(categories) {
   });
 }
 
+
 menuBtn.addEventListener("click", () => {
   sidePanel.classList.remove("translate-x-full");
 });
@@ -64,6 +68,7 @@ menuBtn.addEventListener("click", () => {
 closeBtn.addEventListener("click", () => {
   sidePanel.classList.add("translate-x-full");
 });
+
 
 function displayDescription(name, description) {
   meals.innerHTML = `
@@ -78,18 +83,16 @@ function displayDescription(name, description) {
   `;
 }
 
-function fetchMealsByCategory(categoryName) {
-  fetch("https://www.themealdb.com/api/json/v1/1/filter.php?c=" + categoryName)
-    .then((response) => response.json())
-    .then((data) => {
-      const similarMealsContainer = document.getElementById("similarMeals");
-      similarMealsContainer.innerHTML = "";
-
-      data.meals.forEach((meal) => {
+async function fetchMealsByCategory(categoryName) {
+  try {
+    const response = await fetch("https://www.themealdb.com/api/json/v1/1/filter.php?c=" + categoryName);
+    const data = await response.json();
+    const similarMealsContainer = document.getElementById("similarMeals");
+    similarMealsContainer.innerHTML = "";
+    data.meals.forEach((meal) => {
+      if (meal.strMealThumb && meal.strMealThumb.trim() !== "") {
         const mealCard = document.createElement("div");
-        mealCard.className =
-          "rounded-lg overflow-hidden shadow-md w-60 hover:shadow-lg transition-all duration-300 cursor-pointer";
-
+        mealCard.className = "rounded-lg overflow-hidden shadow-md w-60 hover:shadow-lg transition-all duration-300 cursor-pointer";
         mealCard.innerHTML = `
           <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="w-full h-40 object-cover">
           <div class="p-3">
@@ -99,32 +102,35 @@ function fetchMealsByCategory(categoryName) {
         mealCard.addEventListener("click", () => {
           fetchMealDetails(meal.idMeal);
         });
-
         similarMealsContainer.appendChild(mealCard);
-      });
-    })
-    .catch((error) => console.error("Error fetching meals:", error));
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching meals by category:", error);
+  }
 }
 
-function fetchMealDetails(mealId) {
-  fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.meals && data.meals[0]) {
-        displayMealDetails(data.meals[0]);
-      }
-    })
-    .catch(error => console.error('Error fetching meal details:', error));
+
+async function fetchMealDetails(mealId) {
+  try {
+    const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`);
+    const data = await response.json();
+    if (data.meals && data.meals[0]) {
+      displayMealDetails(data.meals[0]);
+    }
+  } catch (error) {
+    console.error('Error fetching meal details:', error);
+  }
 }
 
 function displayMealDetails(meal) {
   meals.innerHTML = `
     <div class="rounded-xl mx-10 my-10 p-6">
-      <div class="flex flex-col md:flex-row gap-6 border p-7 rounded-lg bg-white">
+      <div class="md:flex-row gap-6  p-7 rounded-lg">
         <div class="w-full md:w-1/3 flex justify-center">
-          <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="rounded-lg w-full max-w-xs object-cover" />
+          <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="rounded-lg h-full w-full  object-cover" />
         </div>
-        <div class="flex-1">
+        <div>
           <h2 class="text-4xl font-bold text-orange-600 mb-2">${meal.strMeal}</h2>
           <div class="mb-3">
             <span class="font-semibold">Category:</span> ${meal.strCategory || ""}
@@ -135,7 +141,7 @@ function displayMealDetails(meal) {
           </div>
           <div class="mb-4"><a href="${meal.strSource || '#'}" class="text-blue-600 underline" target="_blank">Source Link</a></div>
           <h3 class="text-2xl font-bold text-orange-500 mb-2">Ingredients</h3>
-          <ul class="mb-4 grid grid-cols-2 gap-2">${getIngredientsList(meal)}</ul>
+          <ul class="mb-4 grid grid-cols-1 gap-2">${getIngredientsList(meal)}</ul>
           <h3 class="text-2xl font-bold text-orange-500 mb-2">Instructions</h3>
           <p class="text-gray-700 whitespace-pre-wrap">${meal.strInstructions}</p>
         </div>
@@ -155,21 +161,4 @@ function getIngredientsList(meal) {
   }
   return ingredients;
 }
-
-
-
-
-
-function getIngredientsList(meal) {
-  let ingredients = "";
-  for (let i = 1; i <= 20; i++) {
-    const ing = meal[`strIngredient${i}`];
-    const measure = meal[`strMeasure${i}`];
-    if (ing && ing.trim()) {
-      ingredients += `<li>🍴 ${ing} <span class="text-gray-500">(${measure || ""})</span></li>`;
-    }
-  }
-  return ingredients;
-}
-
 
