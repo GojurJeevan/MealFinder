@@ -106,7 +106,6 @@ function fetchMealsByCategory(categoryName) {
     .catch((error) => console.error("Error fetching meals:", error));
 }
 
-
 function fetchMealDetails(mealId) {
   fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`)
     .then(response => response.json())
@@ -121,7 +120,7 @@ function fetchMealDetails(mealId) {
 function displayMealDetails(meal) {
   meals.innerHTML = `
     <div class="rounded-xl mx-10 my-10 p-6">
-      
+      <div class="flex flex-col md:flex-row gap-6 border p-7 rounded-lg bg-white">
         <div class="w-full md:w-1/3 flex justify-center">
           <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="rounded-lg w-full max-w-xs object-cover" />
         </div>
@@ -140,10 +139,26 @@ function displayMealDetails(meal) {
           <h3 class="text-2xl font-bold text-orange-500 mb-2">Instructions</h3>
           <p class="text-gray-700 whitespace-pre-wrap">${meal.strInstructions}</p>
         </div>
-      
+      </div>
     </div>
   `;
 }
+
+function getIngredientsList(meal) {
+  let ingredients = "";
+  for (let i = 1; i <= 20; i++) {
+    const ing = meal[`strIngredient${i}`];
+    const measure = meal[`strMeasure${i}`];
+    if (ing && ing.trim()) {
+      ingredients += `<li>🍴 ${ing} <span class="text-gray-500">(${measure || ""})</span></li>`;
+    }
+  }
+  return ingredients;
+}
+
+
+
+
 
 function getIngredientsList(meal) {
   let ingredients = "";
