@@ -132,7 +132,7 @@ function displayMealDetails(meal) {
       <div class="md:flex-row gap-6 p-7 rounded-lg">
         <div class="flex justify-between flex-col md:flex-row">
           <div class="w-full md:w-1/3 flex justify-center">
-            <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="rounded-lg h-full w-full object-cover" />
+            <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="rounded-lg h-full w-full object-cover md:ml-50" />
           </div>
           <div class="flex-1 md:ml-100">
             <h2 class="text-4xl font-bold text-orange-600 mb-2">${meal.strMeal}</h2>
@@ -150,7 +150,7 @@ function displayMealDetails(meal) {
           </div>
         </div>
         <h2 class="text-xl mt-20 font-semibold">Measure:</h2>
-        <div class=" shadow-md grid grid-cols-1 md:grid-cols-2 mt-5">
+        <div class="shadow-md grid grid-cols-1 md:grid-cols-2 mt-5 border bg-white rounded-xl">
           ${getmeasureList(meal)}
         </div>
         <div class="block hidden md:block mt-5">
@@ -168,7 +168,7 @@ function getIngredientsList(meal) {
     const ing = meal[`strIngredient${i}`];
     const measure = meal[`strMeasure${i}`];
     if (ing && ing.trim()) {
-      ingredients += `<li> <span class="border rounded-full m-3 bg-green-200 text-black w-20">${i}</span>${ing}</li>`;
+      ingredients += `<li> <span class="border rounded-full m-3 bg-green-500 text-black w-20">${i}</span>${ing}</li>`;
     }
   }
   return ingredients;
@@ -181,7 +181,7 @@ function getmeasureList(meal){
     const ing = meal[`strIngredient${i}`];
     const measure = meal[`strMeasure${i}`];
     if (ing && ing.trim()){
-      ingredients += `<ul><i class="fa-solid fa-spoon text-orange-500"></i><span>${measure || ""}</span></ul>`
+      ingredients += `<ul class="ml-3"><i class="fa-solid fa-spoon text-orange-500"></i><span>${measure || ""}</span></ul>`
     }
   }
   return ingredients;
